@@ -53,16 +53,14 @@ int main()
         return 1;
     }
 
-        unsigned short int current = 0;
+    unsigned short int current = 0;
     printf("%sEnter the first player (0 for X, 1 for O) : %s", WHITE_TEXT, RESET);
     scanf("%hu", &current);
     if (current != 1 && current != 0)
         current = 0;
     clearBuffer();
-    if (current == 0)
-        preMoves[0] = 0UL;
-    else
-        preMoves[0] = 0UL;
+    preMoves[0] = 0UL;
+    preMoves[0] = 0UL;
 
     unsigned short int moveCount = 0;
     unsigned short int gameOver = 0;
@@ -77,7 +75,13 @@ int main()
         printf("\n%sWhat would you like to do?\nMove - 0, Undo - 1: %s", WHITE_TEXT, RESET);
         scanf("%hu", &decision);
         clearBuffer();
-        if (decision && (moveCount > 0))
+        while ((decision != 1) && (decision != 0))
+        {
+            printf("\n%sInvalid input!\n%sWhat would you like to do?\nMove - 0, Undo - 1: %s", RED_TEXT, WHITE_TEXT, RESET);
+            scanf("%hu", &decision);
+            clearBuffer();
+        }
+        if (decision && (moveCount > 1))
         {
             if (current == 0)
             {
@@ -89,7 +93,25 @@ int main()
             else
             {
                 current = 0;
-                stateOfX = preMoves[moveCount - 1];
+                stateOfX = preMoves[moveCount - 2];
+                moveCount--;
+                printGameTable(size, stateOfX, stateOfO);
+            }
+            continue;
+        }
+        else if ((moveCount == 1) && decision)
+        {
+            if (current == 0)
+            {
+                current = 1;
+                stateOfO = 0;
+                moveCount--;
+                printGameTable(size, stateOfX, stateOfO);
+            }
+            else
+            {
+                current = 0;
+                stateOfX = 0;
                 moveCount--;
                 printGameTable(size, stateOfX, stateOfO);
             }
@@ -97,7 +119,7 @@ int main()
         }
         else if (decision && (moveCount == 0))
         {
-            printf("%sCan't undo further!%s\n", RED_TEXT, RESET);
+            printf("\n%sCan't undo further!%s\n", RED_TEXT, RESET);
             continue;
         }
 
