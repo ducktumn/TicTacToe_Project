@@ -286,7 +286,7 @@ void makeMove(unsigned long int *status, unsigned short int row, unsigned short 
 
 void preCalculateMoves(unsigned long int **possibilities, unsigned short int size, unsigned short int *countOfPossibilities)
 {
-    unsigned short int moveCount = size * (134 + size * (-38 + 4 * size)) - 160;
+    unsigned short int moveCount = 2 * (size - 2) * size + 2 * (size - 2) + 4 * (size - 3) * (1 + (size - 4) * 0.5);
     *countOfPossibilities = moveCount;
     unsigned short int movesLeft = moveCount;
 
