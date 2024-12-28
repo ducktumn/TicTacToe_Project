@@ -3,7 +3,7 @@
 
 /*  Written by Ali Egemen Bilak using VSCode and JDK 21.0.5 on Ubuntu 24.04.1 LTS
     https://github.com/ducktumn
-    Last Edit: 26.12.2024
+    Last Edit: 29.12.2024
     Made for MEF University COMP205 final project.
 */
 
@@ -16,24 +16,27 @@
 #define RED_TEXT "\033[31m"
 #define YELLOW "\033[1;33m"
 
+typedef unsigned long long int ull_int;
+typedef unsigned short int us_int;
+
 // Hej hej hej sokoły
 // https://open.spotify.com/track/16okyAWAlUFsNacLxukOsp?si=5762286771f948a4
 
-char *getBinary(unsigned long int number, unsigned short int bitCount);
-void printGameTable(unsigned short int size, unsigned long int xStatus, unsigned long int oStatus);
-int checkWin(unsigned long int status, unsigned long int *possibilities, unsigned short int countOfPossibilities);
+char *getBinary(ull_int number, us_int bitCount);
+void printGameTable(us_int size, ull_int xStatus, ull_int oStatus);
+int checkWin(ull_int status, ull_int *possibilities, us_int countOfPossibilities);
 void clearBuffer();
-int isMoveValid(unsigned short int size, unsigned short int x, unsigned short int y, unsigned long int xState, unsigned long int oState, unsigned short int current);
-void printResult(unsigned short int result);
-void makeMove(unsigned long int *status, unsigned short int row, unsigned short int col, unsigned short int size);
-void preCalculateMoves(unsigned long int **possibilities, unsigned short int size, unsigned short int *countOfPossibilities);
+int isMoveValid(us_int size, us_int x, us_int y, ull_int xState, ull_int oState, us_int current);
+void printResult(us_int result);
+void makeMove(ull_int *status, us_int row, us_int col, us_int size);
+void preCalculateMoves(ull_int **possibilities, us_int size, us_int *countOfPossibilities);
 
 int main()
 {
-    unsigned long int stateOfX = 0;
-    unsigned long int stateOfO = 0;
+    ull_int stateOfX = 0;
+    ull_int stateOfO = 0;
 
-    unsigned short int size = 0;
+    us_int size = 0;
     printf("%sEnter the size of the game (Maximum is 8, Minimum is 3) : %s", WHITE_TEXT, RESET);
     scanf("%hu", &size);
     clearBuffer();
@@ -43,17 +46,17 @@ int main()
         return 1;
     }
 
-    unsigned long int *winConditions;
-    unsigned short int winConditionCount;
+    ull_int *winConditions;
+    us_int winConditionCount;
     preCalculateMoves(&winConditions, size, &winConditionCount);
-    unsigned long int *preMoves = (unsigned long int *)malloc(sizeof(unsigned long int) * size * size);
+    ull_int *preMoves = (ull_int *)malloc(sizeof(ull_int) * size * size);
     if (preMoves == NULL)
     {
         printf("%sMemory Allocation Fail!%s\n", RED_TEXT, RESET);
         return 1;
     }
 
-    unsigned short int current = 0;
+    us_int current = 0;
     printf("%sEnter the first player (0 for X, 1 for O) : %s", WHITE_TEXT, RESET);
     scanf("%hu", &current);
     if (current != 1 && current != 0)
@@ -62,8 +65,8 @@ int main()
     preMoves[0] = 0UL;
     preMoves[0] = 0UL;
 
-    unsigned short int moveCount = 0;
-    unsigned short int gameOver = 0;
+    us_int moveCount = 0;
+    us_int gameOver = 0;
     while ((moveCount < size * size) && !gameOver)
     {
 
@@ -71,7 +74,7 @@ int main()
         if (current == 0)
             player = 'X';
 
-        unsigned short int decision;
+        us_int decision;
         printf("\n%sWhat would you like to do?\nMove - 0, Undo - 1: %s", WHITE_TEXT, RESET);
         scanf("%hu", &decision);
         clearBuffer();
@@ -123,8 +126,8 @@ int main()
             continue;
         }
 
-        unsigned short int row;
-        unsigned short int col;
+        us_int row;
+        us_int col;
         printf("\n%sEnter your move for \"%c\" by typing row and column with a space in the middle: %s", WHITE_TEXT, player, RESET);
         scanf("%hu%hu", &row, &col);
         clearBuffer();
@@ -171,7 +174,7 @@ int main()
     return 0;
 }
 
-void printGameTable(unsigned short int size, unsigned long int xStatus, unsigned long int oStatus)
+void printGameTable(us_int size, ull_int xStatus, ull_int oStatus)
 {
     printf("\n");
     printf("   ");
@@ -207,7 +210,7 @@ void printGameTable(unsigned short int size, unsigned long int xStatus, unsigned
     printf("\n");
 }
 
-int checkWin(unsigned long int status, unsigned long int *possibilities, unsigned short int countOfPossibilities)
+int checkWin(ull_int status, ull_int *possibilities, us_int countOfPossibilities)
 {
     for (int i = 0; i < countOfPossibilities; i++)
     {
@@ -217,7 +220,7 @@ int checkWin(unsigned long int status, unsigned long int *possibilities, unsigne
     return 0;
 }
 
-char *getBinary(unsigned long int number, unsigned short int bitCount)
+char *getBinary(ull_int number, us_int bitCount)
 {
     char *returnPointer = (char *)malloc(bitCount + 1);
     if (returnPointer == NULL)
@@ -246,12 +249,12 @@ void clearBuffer()
         ;
 }
 
-int isMoveValid(unsigned short int size, unsigned short int x, unsigned short int y, unsigned long int xState, unsigned long int oState, unsigned short int current)
+int isMoveValid(us_int size, us_int x, us_int y, ull_int xState, ull_int oState, us_int current)
 {
     if ((x <= size) && (y <= size))
     {
-        unsigned short int tempShiftCount = (x - 1) * size + y - 1;
-        unsigned long int move = 1UL << tempShiftCount;
+        us_int tempShiftCount = (x - 1) * size + y - 1;
+        ull_int move = 1UL << tempShiftCount;
 
         if (((xState & move) == 0) && ((oState & move) == 0))
             return 1;
@@ -259,7 +262,7 @@ int isMoveValid(unsigned short int size, unsigned short int x, unsigned short in
     return 0;
 }
 
-void printResult(unsigned short int result)
+void printResult(us_int result)
 {
     switch (result)
     {
@@ -277,30 +280,30 @@ void printResult(unsigned short int result)
     }
 }
 
-void makeMove(unsigned long int *status, unsigned short int row, unsigned short int col, unsigned short int size)
+void makeMove(ull_int *status, us_int row, us_int col, us_int size)
 {
     int index_a = ((row - 1) * size + col);
-    unsigned long int k = 1;
+    ull_int k = 1;
     *status |= (k << (index_a - 1));
 }
 
-void preCalculateMoves(unsigned long int **possibilities, unsigned short int size, unsigned short int *countOfPossibilities)
+void preCalculateMoves(ull_int **possibilities, us_int size, us_int *countOfPossibilities)
 {
-    unsigned short int moveCount = 2 * (size - 2) * size + 2 * (size - 2) + 4 * (size - 3) * (1 + (size - 4) * 0.5);
+    us_int moveCount = 2 * (size - 2) * size + 2 * (size - 2) + 4 * (size - 3) * (1 + (size - 4) * 0.5);
     *countOfPossibilities = moveCount;
-    unsigned short int movesLeft = moveCount;
+    us_int movesLeft = moveCount;
 
-    unsigned long int *winConditions = (unsigned long int *)malloc(sizeof(unsigned long int) * moveCount);
+    ull_int *winConditions = (ull_int *)malloc(sizeof(ull_int) * moveCount);
 
     if (winConditions == NULL)
     {
         printf("%sMemory Allocation Fail!%s\n", RED_TEXT, RESET);
         exit(1);
     }
-    unsigned long int bit = 1;
+    ull_int bit = 1;
     {
-        unsigned long int tempHorizontal = (unsigned long int)7;
-        unsigned long int tempVertical = bit + (bit << size) + (bit << (2 * size));
+        ull_int tempHorizontal = (ull_int)7;
+        ull_int tempVertical = bit + (bit << size) + (bit << (2 * size));
         for (int i = 0; i < size; i++)
         {
             for (int j = 0; j < size - 2; j++)
@@ -323,8 +326,8 @@ void preCalculateMoves(unsigned long int **possibilities, unsigned short int siz
         }
     }
     {
-        unsigned long int firstMainDiagonal = 1 + (bit << (size + 1)) + (bit << (size + 1) << (size + 1));
-        unsigned long int secondMainDiagonal = (bit << (size - 1)) + (bit << (2 * size - 2)) + (bit << (3 * size - 3));
+        ull_int firstMainDiagonal = 1 + (bit << (size + 1)) + (bit << (size + 1) << (size + 1));
+        ull_int secondMainDiagonal = (bit << (size - 1)) + (bit << (2 * size - 2)) + (bit << (3 * size - 3));
         for (int i = 0; i < size - 2; i++)
         {
             winConditions[moveCount - movesLeft] = firstMainDiagonal;
@@ -336,16 +339,16 @@ void preCalculateMoves(unsigned long int **possibilities, unsigned short int siz
         }
     }
     {
-        unsigned long int tempUpSubDiagonal = (bit << (2 * size)) + (bit << (size + 1)) + (bit << 2);
-        unsigned long int tempDownSubDiagonal = (bit << (size - 3)) + (bit << (2 * size - 2)) + (bit << (3 * size - 1));
+        ull_int tempUpSubDiagonal = (bit << (2 * size)) + (bit << (size + 1)) + (bit << 2);
+        ull_int tempDownSubDiagonal = (bit << (size - 3)) + (bit << (2 * size - 2)) + (bit << (3 * size - 1));
 
-        unsigned short int ascending = 1;
+        us_int ascending = 1;
         for (int i = 0; i < 2 * size - 5; i++)
         {
             if (i == (size - 3))
             {
                 ascending = 0;
-                unsigned long int firstDescendingBit = bit << (size * (size - 1) + 1);
+                ull_int firstDescendingBit = bit << (size * (size - 1) + 1);
                 tempUpSubDiagonal = firstDescendingBit + (firstDescendingBit >> (size - 1)) + (firstDescendingBit >> (2 * size - 2));
                 firstDescendingBit <<= (size - 3);
                 tempDownSubDiagonal = firstDescendingBit + (firstDescendingBit >> (size + 1)) + (firstDescendingBit >> (2 * size + 2));
@@ -364,7 +367,7 @@ void preCalculateMoves(unsigned long int **possibilities, unsigned short int siz
                         tempDownSubDiagonal >>= (size + 1);
                     }
                 }
-                unsigned long int ascendingBit = bit << ((3 + i) * size);
+                ull_int ascendingBit = bit << ((3 + i) * size);
                 tempUpSubDiagonal = ascendingBit + (ascendingBit >> (size - 1)) + (ascendingBit >> (2 * size - 2));
                 ascendingBit = bit << ((4 + i) * size - 1);
                 tempDownSubDiagonal = ascendingBit + (ascendingBit >> (size + 1)) + (ascendingBit >> (2 * size + 2));
@@ -383,7 +386,7 @@ void preCalculateMoves(unsigned long int **possibilities, unsigned short int siz
                         tempDownSubDiagonal >>= (size + 1);
                     }
                 }
-                unsigned long int ascendingBit = bit << ((size - 1) * size + i - (size - 4));
+                ull_int ascendingBit = bit << ((size - 1) * size + i - (size - 4));
                 tempUpSubDiagonal = ascendingBit + (ascendingBit >> (size - 1)) + (ascendingBit >> (2 * size - 2));
                 ascendingBit = bit << ((size - 1) * size + (2 * size - 5 - i));
                 tempDownSubDiagonal = ascendingBit + (ascendingBit >> (size + 1)) + (ascendingBit >> (2 * size + 2));
