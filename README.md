@@ -60,7 +60,7 @@ Follow the on-screen prompts to:
 ## Links
 
 - GitHub: [https://github.com/ducktumn](https://github.com/ducktumn)
-- LinkedIn: [https://www.linkedin.com/in/ali-egemen-bilak-9232952b2/]
+- LinkedIn: https://www.linkedin.com/in/ali-egemen-bilak-9232952b2/
 
 ---
 *Last updated: December 29, 2024*
