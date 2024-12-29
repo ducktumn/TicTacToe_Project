@@ -30,6 +30,7 @@ int isMoveValid(us_int size, us_int x, us_int y, ull_int xState, ull_int oState,
 void printResult(us_int result);
 void makeMove(ull_int *status, us_int row, us_int col, us_int size);
 void preCalculateMoves(ull_int **possibilities, us_int size, us_int *countOfPossibilities);
+void clearTerminal();
 
 int main()
 {
@@ -37,13 +38,16 @@ int main()
     ull_int stateOfO = 0;
 
     us_int size = 0;
-    printf("%sEnter the size of the game (Maximum is 8, Minimum is 3) : %s", WHITE_TEXT, RESET);
+    printf("%sEnter the size of the game (Maximum is 8, Minimum is 3): %s", WHITE_TEXT, RESET);
     scanf("%hu", &size);
     clearBuffer();
-    if (size < 3)
+    clearTerminal();
+    while ((size < 3) || (size > 8))
     {
-        printf("\n%sInvalid board size!%s\n", RED_TEXT, RESET);
-        return 1;
+        printf("%sInvalid board size!\n%sEnter the size of the game (Maximum is 8, Minimum is 3): %s", RED_TEXT, WHITE_TEXT, RESET);
+        scanf("%hu", &size);
+        clearBuffer();
+        clearTerminal();
     }
 
     ull_int *winConditions;
@@ -57,11 +61,18 @@ int main()
     }
 
     us_int current = 0;
-    printf("%sEnter the first player (0 for X, 1 for O) : %s", WHITE_TEXT, RESET);
+    printf("%sEnter the first player (0 for X, 1 for O): %s", WHITE_TEXT, RESET);
     scanf("%hu", &current);
-    if (current != 1 && current != 0)
-        current = 0;
     clearBuffer();
+    clearTerminal();
+    while (current != 1 && current != 0)
+    {
+        printf("%sInvalid player number!\n%sEnter the first player (0 for X, 1 for O): %s", RED_TEXT, WHITE_TEXT, RESET);
+        scanf("%hu", &current);
+        clearBuffer();
+        clearTerminal();
+    }
+
     preMoves[0] = 0UL;
     preMoves[0] = 0UL;
 
@@ -75,14 +86,16 @@ int main()
             player = 'X';
 
         us_int decision;
-        printf("\n%sWhat would you like to do?\nMove - 0, Undo - 1: %s", WHITE_TEXT, RESET);
+        printf("%sWhat would you like to do?\nMove - 0, Undo - 1: %s", WHITE_TEXT, RESET);
         scanf("%hu", &decision);
         clearBuffer();
+        clearTerminal();
         while ((decision != 1) && (decision != 0))
         {
-            printf("\n%sInvalid input!\n%sWhat would you like to do?\nMove - 0, Undo - 1: %s", RED_TEXT, WHITE_TEXT, RESET);
+            printf("%sInvalid input!\n%sWhat would you like to do?\nMove - 0, Undo - 1: %s", RED_TEXT, WHITE_TEXT, RESET);
             scanf("%hu", &decision);
             clearBuffer();
+            clearTerminal();
         }
         if (decision && (moveCount > 1))
         {
@@ -122,7 +135,7 @@ int main()
         }
         else if (decision && (moveCount == 0))
         {
-            printf("\n%sCan't undo further!%s\n", RED_TEXT, RESET);
+            printf("%sCan't undo further!\n%s", RED_TEXT, RESET);
             continue;
         }
 
@@ -131,11 +144,13 @@ int main()
         printf("\n%sEnter your move for \"%c\" by typing row and column with a space in the middle: %s", WHITE_TEXT, player, RESET);
         scanf("%hu%hu", &row, &col);
         clearBuffer();
+        clearTerminal();
         while (!isMoveValid(size, row, col, stateOfX, stateOfO, current))
         {
             printf("\n%sInvalid input!\n%sEnter your move for \"%c\" by typing row and column with a space in the middle: %s", RED_TEXT, WHITE_TEXT, player, RESET);
             scanf("%hu%hu", &row, &col);
             clearBuffer();
+            clearTerminal();
         }
 
         if (current == 0)
@@ -159,7 +174,7 @@ int main()
             else
                 current = 0;
         }
-
+        clearTerminal();
         printGameTable(size, stateOfX, stateOfO);
     }
 
@@ -394,4 +409,13 @@ void preCalculateMoves(ull_int **possibilities, us_int size, us_int *countOfPoss
         }
     }
     *possibilities = winConditions;
+}
+
+void clearTerminal()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
 }
