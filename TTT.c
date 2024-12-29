@@ -45,7 +45,7 @@ int main()
     ull_int stateOfO = 0;
 
     us_int size = 0;
-    printf("%s%sEnter the size of the game (Maximum is 8, Minimum is 3): %s", WHITE_TEXT, PREVIOUS_LINE, RESET);
+    printf("%s%sWelcome to the TicTacToe Game!\n%s%sEnter the size of the game (Maximum is 8, Minimum is 3): %s", YELLOW, PREVIOUS_LINE, RESET, WHITE_TEXT, RESET);
     scanf("%hu", &size);
     clearBuffer();
     clearTerminal();
