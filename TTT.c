@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 /*  Written by Ali Egemen Bilak using VSCode and JDK 21.0.5 on Ubuntu 24.04.1 LTS
     https://github.com/ducktumn
     Last Edit: 29.12.2024
@@ -15,6 +21,7 @@
 #define BOLD "\033[1m"
 #define RED_TEXT "\033[31m"
 #define YELLOW "\033[1;33m"
+#define PREVIOUS_LINE "\033[F"
 
 typedef unsigned long long int ull_int;
 typedef unsigned short int us_int;
@@ -22,7 +29,6 @@ typedef unsigned short int us_int;
 // Hej hej hej sokoły
 // https://open.spotify.com/track/16okyAWAlUFsNacLxukOsp?si=5762286771f948a4
 
-char *getBinary(ull_int number, us_int bitCount);
 void printGameTable(us_int size, ull_int xStatus, ull_int oStatus);
 int checkWin(ull_int status, ull_int *possibilities, us_int countOfPossibilities);
 void clearBuffer();
@@ -31,6 +37,7 @@ void printResult(us_int result);
 void makeMove(ull_int *status, us_int row, us_int col, us_int size);
 void preCalculateMoves(ull_int **possibilities, us_int size, us_int *countOfPossibilities);
 void clearTerminal();
+void sleepSecond(int seconds);
 
 int main()
 {
@@ -38,7 +45,7 @@ int main()
     ull_int stateOfO = 0;
 
     us_int size = 0;
-    printf("%sEnter the size of the game (Maximum is 8, Minimum is 3): %s", WHITE_TEXT, RESET);
+    printf("%s%sEnter the size of the game (Maximum is 8, Minimum is 3): %s", WHITE_TEXT, PREVIOUS_LINE, RESET);
     scanf("%hu", &size);
     clearBuffer();
     clearTerminal();
@@ -56,8 +63,38 @@ int main()
     ull_int *preMoves = (ull_int *)malloc(sizeof(ull_int) * size * size);
     if (preMoves == NULL)
     {
+        clearTerminal();
         printf("%sMemory Allocation Fail!%s\n", RED_TEXT, RESET);
+        sleepSecond(5);
         return 1;
+    }
+
+    int sizeOfInfo = 7;
+    if (size > 7)
+        sizeOfInfo = 8;
+    char *gameInfoReset = (char *)malloc(sizeof(char) * sizeOfInfo);
+    if (gameInfoReset == NULL)
+    {
+        clearTerminal();
+        printf("%sMemory Allocation Fail!%s\n", RED_TEXT, RESET);
+        sleepSecond(5);
+        return 1;
+    }
+    gameInfoReset[sizeOfInfo - 1] = '\0';
+    gameInfoReset[sizeOfInfo - 2] = 'H';
+    gameInfoReset[sizeOfInfo - 3] = '1';
+    gameInfoReset[sizeOfInfo - 4] = ';';
+    gameInfoReset[1] = '[';
+    gameInfoReset[0] = '\033';
+    if (size > 7)
+    {
+        int tempNum = size + 2;
+        gameInfoReset[2] = (char)((tempNum / 10) + '0');
+        gameInfoReset[3] = (char)((tempNum % 10) + '0');
+    }
+    else
+    {
+        gameInfoReset[2] = (char)((size + 2) + '0');
     }
 
     us_int current = 0;
@@ -74,28 +111,25 @@ int main()
     }
 
     preMoves[0] = 0UL;
-    preMoves[0] = 0UL;
 
     us_int moveCount = 0;
     us_int gameOver = 0;
+    printGameTable(size, 0, 0);
     while ((moveCount < size * size) && !gameOver)
     {
-
         char player = 'O';
         if (current == 0)
             player = 'X';
 
         us_int decision;
-        printf("%sWhat would you like to do?\nMove - 0, Undo - 1: %s", WHITE_TEXT, RESET);
+        printf("%s\nWhat would you like to do?\nMove - 0, Undo - 1: %s", WHITE_TEXT, RESET);
         scanf("%hu", &decision);
         clearBuffer();
-        clearTerminal();
         while ((decision != 1) && (decision != 0))
         {
-            printf("%sInvalid input!\n%sWhat would you like to do?\nMove - 0, Undo - 1: %s", RED_TEXT, WHITE_TEXT, RESET);
+            printf("%s%s\nInvalid input!%12s\n%sWhat would you like to do?\nMove - 0, Undo - 1: %s", RED_TEXT, gameInfoReset, "", WHITE_TEXT, RESET);
             scanf("%hu", &decision);
             clearBuffer();
-            clearTerminal();
         }
         if (decision && (moveCount > 1))
         {
@@ -122,6 +156,7 @@ int main()
                 current = 1;
                 stateOfO = 0;
                 moveCount--;
+                clearTerminal();
                 printGameTable(size, stateOfX, stateOfO);
             }
             else
@@ -129,28 +164,32 @@ int main()
                 current = 0;
                 stateOfX = 0;
                 moveCount--;
+                clearTerminal();
                 printGameTable(size, stateOfX, stateOfO);
             }
             continue;
         }
         else if (decision && (moveCount == 0))
         {
-            printf("%sCan't undo further!\n%s", RED_TEXT, RESET);
+            clearTerminal();
+            printGameTable(size, stateOfX, stateOfO);
+            printf("%s%s\nCan't undo further!%s", RED_TEXT, gameInfoReset, RESET);
             continue;
         }
 
         us_int row;
         us_int col;
-        printf("\n%sEnter your move for \"%c\" by typing row and column with a space in the middle: %s", WHITE_TEXT, player, RESET);
+        clearTerminal();
+        printGameTable(size, stateOfX, stateOfO);
+        printf("%s%s\nEnter your move for \"%c\" by typing row and column with a space in the middle: %s", gameInfoReset, WHITE_TEXT, player, RESET);
         scanf("%hu%hu", &row, &col);
         clearBuffer();
-        clearTerminal();
+
         while (!isMoveValid(size, row, col, stateOfX, stateOfO, current))
         {
-            printf("\n%sInvalid input!\n%sEnter your move for \"%c\" by typing row and column with a space in the middle: %s", RED_TEXT, WHITE_TEXT, player, RESET);
+            printf("%s\n%sInvalid input!%75s\n%sEnter your move for \"%c\" by typing row and column with a space in the middle: %s", gameInfoReset, RED_TEXT, "", WHITE_TEXT, player, RESET);
             scanf("%hu%hu", &row, &col);
             clearBuffer();
-            clearTerminal();
         }
 
         if (current == 0)
@@ -185,13 +224,16 @@ int main()
             printResult(1);
     else
         printResult(2);
+    sleepSecond(5);
 
+    free(winConditions);
+    free(preMoves);
+    free(gameInfoReset);
     return 0;
 }
 
 void printGameTable(us_int size, ull_int xStatus, ull_int oStatus)
 {
-    printf("\n");
     printf("   ");
     for (int i = 0; i < size; i++)
     {
@@ -222,7 +264,6 @@ void printGameTable(us_int size, ull_int xStatus, ull_int oStatus)
 
         printf("\n");
     }
-    printf("\n");
 }
 
 int checkWin(ull_int status, ull_int *possibilities, us_int countOfPossibilities)
@@ -233,29 +274,6 @@ int checkWin(ull_int status, ull_int *possibilities, us_int countOfPossibilities
             return 1;
     }
     return 0;
-}
-
-char *getBinary(ull_int number, us_int bitCount)
-{
-    char *returnPointer = (char *)malloc(bitCount + 1);
-    if (returnPointer == NULL)
-    {
-        printf("%sMemory Allocation Fail!%s\n", RED_TEXT, RESET);
-        exit(1);
-    }
-
-    for (int i = bitCount - 1; i >= 0; i--)
-    {
-        if (number & 1)
-            returnPointer[i] = '1';
-        else
-            returnPointer[i] = '0';
-        number = number >> 1;
-    }
-
-    returnPointer[bitCount] = '\0';
-
-    return returnPointer;
 }
 
 void clearBuffer()
@@ -312,7 +330,9 @@ void preCalculateMoves(ull_int **possibilities, us_int size, us_int *countOfPoss
 
     if (winConditions == NULL)
     {
+        clearTerminal();
         printf("%sMemory Allocation Fail!%s\n", RED_TEXT, RESET);
+        sleepSecond(5);
         exit(1);
     }
     ull_int bit = 1;
@@ -417,5 +437,14 @@ void clearTerminal()
     system("cls");
 #else
     system("clear");
+#endif
+}
+
+void sleepSecond(int seconds)
+{
+#ifdef _WIN32
+    Sleep(seconds * 1000);
+#else
+    sleep(seconds);
 #endif
 }
