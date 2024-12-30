@@ -32,7 +32,7 @@ typedef unsigned short int us_int;
 void printGameTable(us_int size, ull_int xStatus, ull_int oStatus);
 int checkWin(ull_int status, ull_int *possibilities, us_int countOfPossibilities);
 void clearBuffer();
-int isMoveValid(us_int size, us_int x, us_int y, ull_int xState, ull_int oState, us_int current);
+int isMoveValid(us_int size, us_int x, us_int y, ull_int xState, ull_int oState);
 void printResult(us_int result);
 void makeMove(ull_int *status, us_int row, us_int col, us_int size);
 void preCalculateMoves(ull_int **possibilities, us_int size, us_int *countOfPossibilities);
@@ -185,7 +185,7 @@ int main()
         scanf("%hu%hu", &row, &col);
         clearBuffer();
 
-        while (!isMoveValid(size, row, col, stateOfX, stateOfO, current))
+        while (!isMoveValid(size, row, col, stateOfX, stateOfO))
         {
             printf("%s\n%sInvalid input!%75s\n%sEnter your move for \"%c\" by typing row and column with a space in the middle: %s", gameInfoReset, RED_TEXT, "", WHITE_TEXT, player, RESET);
             scanf("%hu%hu", &row, &col);
@@ -282,7 +282,7 @@ void clearBuffer()
         ;
 }
 
-int isMoveValid(us_int size, us_int x, us_int y, ull_int xState, ull_int oState, us_int current)
+int isMoveValid(us_int size, us_int x, us_int y, ull_int xState, ull_int oState)
 {
     if ((x <= size) && (y <= size) && (x > 0) && (y > 0))
     {
