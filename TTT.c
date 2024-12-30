@@ -287,7 +287,7 @@ int isMoveValid(us_int size, us_int x, us_int y, ull_int xState, ull_int oState,
     if ((x <= size) && (y <= size) && (x > 0) && (y > 0))
     {
         us_int tempShiftCount = (x - 1) * size + y - 1;
-        ull_int move = 1UL << tempShiftCount;
+        ull_int move = 1ULL << tempShiftCount;
 
         if (((xState & move) == 0) && ((oState & move) == 0))
             return 1;
