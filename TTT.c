@@ -138,6 +138,7 @@ int main()
                 current = 1;
                 stateOfO = preMoves[moveCount - 2];
                 moveCount--;
+                clearTerminal();
                 printGameTable(size, stateOfX, stateOfO);
             }
             else
@@ -145,6 +146,7 @@ int main()
                 current = 0;
                 stateOfX = preMoves[moveCount - 2];
                 moveCount--;
+                clearTerminal();
                 printGameTable(size, stateOfX, stateOfO);
             }
             continue;
